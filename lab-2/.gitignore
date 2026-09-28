@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+results.csv
+sweep.csv
+trace.jsonl
+results/
+# The corpus comes from the course site, as lab-2-data.zip: see README.md.
+data/
+*.zip
