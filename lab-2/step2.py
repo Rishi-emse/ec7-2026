@@ -33,7 +33,7 @@ FRAME = RATE // 100
 # TODO: this function is a filter. Which kind? Use the name from your physics
 # course, in two words joined by "_". Rename it here, and in `speech_mask`
 # below.
-def useful_function_1_to_rename(x: np.ndarray, cutoff_hz: float = 300.0) -> np.ndarray:
+def highpass_filter(x: np.ndarray, cutoff_hz: float = 300.0) -> np.ndarray:
     # Why we need it: the workshop rumbles below 200 Hz, and a voice lives
     # between 300 and 3400 Hz. We want to count the energy of the voice, not
     # the energy of the rumble.
@@ -55,7 +55,7 @@ def useful_function_1_to_rename(x: np.ndarray, cutoff_hz: float = 300.0) -> np.n
 # TODO: this function computes one number per frame. Which physical quantity?
 # Give it a name in two words joined by "_". Rename it here, and in
 # `speech_mask` below.
-def useful_function_2_to_rename(x: np.ndarray) -> np.ndarray:
+def energy_frame(x: np.ndarray) -> np.ndarray:
     # How many whole frames in x? `//` is the integer division.
     n = len(x) // FRAME
     # Keep the first n * FRAME samples. Arrange them as a table with n rows
@@ -77,7 +77,7 @@ def useful_function_2_to_rename(x: np.ndarray) -> np.ndarray:
 # step. Slide 15 of the lecture, and seance_2/slides/code/vad.py, give a first
 # value. Start there. Then run the engine, and change the margin until no clean
 # order is clipped.
-MARGIN_DB = None  # TODO: a number, in dB
+MARGIN_DB = 1  # TODO: a number, in dB
 
 
 def speech_mask(x: np.ndarray, rate: int) -> np.ndarray:
@@ -86,7 +86,7 @@ def speech_mask(x: np.ndarray, rate: int) -> np.ndarray:
 
     # 1. The energy of each frame, in decibels, after the filter.
     #    (When you rename the two functions above, rename them here too.)
-    energy_db = 10 * np.log10(useful_function_2_to_rename(useful_function_1_to_rename(x)))
+    energy_db = 10 * np.log10(energy_frame(highpass_filter(x)))
 
     # 2. The noise of the room. Most of the time, nobody speaks: the 10 % most
     #    quiet frames are the room. np.percentile(a, 10) is the value below
