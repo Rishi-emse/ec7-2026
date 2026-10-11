@@ -1,0 +1,7 @@
+path,speech,condition,n,intent_accuracy,wer,latency_ms_median,latency_ms_p90,stops_obeyed
+pretrained,continuous,clean/order,60,0.983,0.83,384.11,412.41,8/8
+pretrained,continuous,clean/cheerful,60,0.983,0.854,398.89,425.03,8/8
+pretrained,continuous,clean/alarmed,60,0.983,0.825,379.73,417.28,8/8
+pretrained,continuous,snr5/order,60,0.883,0.834,383.0,413.17,8/8
+pretrained,continuous,snr5/cheerful,60,0.95,0.84,392.98,421.01,8/8
+pretrained,continuous,snr5/alarmed,60,0.683,0.866,378.91,422.26,4/8

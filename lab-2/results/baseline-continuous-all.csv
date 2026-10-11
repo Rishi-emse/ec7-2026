@@ -1,0 +1,7 @@
+path,speech,condition,n,intent_accuracy,wer,latency_ms_median,latency_ms_p90,stops_obeyed
+baseline,continuous,clean/order,60,0.0,0.954,2.57,3.0,0/8
+baseline,continuous,clean/cheerful,60,0.0,0.942,2.33,2.91,0/8
+baseline,continuous,clean/alarmed,60,0.0,0.897,2.42,2.92,0/8
+baseline,continuous,snr5/order,60,0.0,2.241,3.92,5.09,0/8
+baseline,continuous,snr5/cheerful,60,0.0,2.297,3.73,4.77,0/8
+baseline,continuous,snr5/alarmed,60,0.0,2.283,3.8,5.02,0/8
