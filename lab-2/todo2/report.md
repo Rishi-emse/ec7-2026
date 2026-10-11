@@ -203,4 +203,6 @@ the recorded voice would oubviously be almost instant
 the onboard voice has a small latency but it's pretty much instant too (20ms)
 the hosted voice has a 600ms latency which is a bit high
 
+Recorded can't say anything that wasn't pre-recorded so it for example can't say what the robot thinks it heards to ask for confirmation.
+
 with the --loopback on the human can interrupt the robot while it's speaking as the robot takes into account what is said while it is speaking if it has a much higher volume.
