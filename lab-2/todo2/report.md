@@ -173,4 +173,4 @@ the recorded voice would oubviously be almost instant
 the onboard voice has a small latency but it's pretty much instant too (20ms)
 the hosted voice has a 600ms latency which is a bit high
 
-with the --loopback on the human can't interrupt the robot while it's speaking as the robot doesn't take into account what is said while it is speaking.
+with the --loopback on the human can interrupt the robot while it's speaking as the robot takes into account what is said while it is speaking if it has a much higher volume.
