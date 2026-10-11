@@ -26,11 +26,18 @@ def should_act(intent: str, confidence: float, state: dict) -> bool:
 
     # TODO 1. An "unparsed" order is never acted on: return False.
 
+    if intent == "unparsed":
+        return False
+
     # TODO 2. "stop" is special. A robot that refuses a stop keeps moving
     # towards a person. A robot that stops by mistake loses a few seconds.
     # Decide what your robot does with a stop of low confidence, write it
     # here, and say why in your report (scenario.md §3.5).
 
+    if intent == "stop":
+        return True
+    
     # TODO 3. Any other order: act (True) if the confidence is at least
     # state["threshold"], refuse (False) otherwise.
-    return False
+
+    return confidence >= state["threshold"]
