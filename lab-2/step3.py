@@ -52,14 +52,16 @@ DATA = HERE / "data"
 #   2. turn the text into a dictionary with the json module.
 #      (https://docs.python.org/3/library/json.html#json.loads)
 # At the end, CORPUS["wake_word"] is "robot three".
-CORPUS = None
+p = pathlib.Path('data/corpus.json')
+corpus_str = p.read_text()
+CORPUS = json.loads(corpus_str)
 
 # TODO: the list of the accepted orders, without the wake word.
 # CORPUS["orders"] is a list of dictionaries. Each one looks like:
 #   {"text": "carry blue pallet", "intent": "carry", "arguments": "blue pallet"}
 # Keep only the "text" of each order. A for loop and .append() are fine.
 # At the end, ACCEPTED looks like: ["forward", "stop", "turn left", ...]
-ACCEPTED = []
+ACCEPTED = [order["text"] for order in CORPUS["orders"]]
 
 
 # -----------------------------------------------------------------------------
@@ -116,7 +118,7 @@ def band_power(segment: np.ndarray) -> np.ndarray:
     # `axis`: along which direction to average. Choose its value: think of
     # `frames` as a table, one row per window, one column per frequency.
     # https://numpy.org/doc/stable/reference/generated/numpy.mean.html
-    spectrogram = None
+    spectrogram = np.mean(frames, axis=0)
 
     # TODO: the index, in `spectrogram`, of BAND_LOW_HZ and of BAND_HIGH_HZ.
     # `spectrogram` has len(spectrogram) values, spread evenly from 0 Hz (index
@@ -124,8 +126,10 @@ def band_power(segment: np.ndarray) -> np.ndarray:
     # is at the index f / (RATE / 2) * (len(spectrogram) - 1), rounded down
     # with int(...). Keep `low` at 1 or more, and `high` at the last index or
     # less: max(...) and min(...) do that.
-    low = None
-    high = None
+    last_index = len(spectrogram) - 1  
+    max_freq = RATE/2
+    low = max(1, int(BAND_LOW_HZ / max_freq * last_index))
+    high = min(last_index, int(BAND_HIGH_HZ / max_freq * last_index))
 
     # TODO: the edges of the 22 bands, from `low` to `high`. The bands must be
     # narrow at low frequencies and wide at high frequencies: each edge is the
@@ -134,7 +138,7 @@ def band_power(segment: np.ndarray) -> np.ndarray:
     # where the sequence starts, where it stops, and how many edges 22 bands
     # need. https://numpy.org/doc/stable/reference/generated/numpy.geomspace.html
     # `.astype(int)` turns the edges into whole numbers: they are indices.
-    edges = np.geomspace(None, None, None).astype(int)
+    edges = np.geomspace(start = low, stop = high , num = 23).astype(int) #22 bands require 23 edges
 
     # The mean power in each band: the mean of `spectrogram` between two
     # neighbouring edges. `zip(edges[:-1], edges[1:])` walks two lists side by
@@ -183,7 +187,7 @@ def read_wav(path: pathlib.Path) -> np.ndarray:
         raw = np.frombuffer(fh.readframes(fh.getnframes()), dtype=np.int16)
     # TODO: we want numbers between -1 and 1. A 16-bit integer goes from
     # -32 768 to 32 767. By which number must we divide? Replace the None.
-    return raw.astype(np.float64) / None
+    return raw.astype(np.float64) / 32768 #will be contained in [-1,1[
 
 
 # One entry per word: the word -> the list of its templates (one per speaker).
@@ -209,7 +213,7 @@ def templates() -> dict[str, list[np.ndarray]]:
             # append it to _templates[word]. The first time a word comes, it
             # has no list yet: `_templates.setdefault(word, [])` returns its
             # list, and creates an empty one if needed.
-            _templates
+            _templates.setdefault(word,[]).append(describe(read_wav(path)))
     return _templates
 
 
@@ -228,21 +232,22 @@ def segments_of(mask: np.ndarray) -> list[tuple[int, int]]:
     # `enumerate` gives, at each turn, the position i and the value `live`.
     for i, live in enumerate(list(mask) + [False]):
         # TODO: two cases, in words:
-        #   - frame i is voice, and no piece is open: a piece starts at i.
-        #   - frame i is not voice, and a piece is open: the piece ends at i.
-        #     Keep it only if it lasts 4 frames (40 ms) or more. Then no piece
-        #     is open any more.
-        pass
+        if live and start is None: # -frame i is voice and no piece is open
+            start  = i # -a piece starts at i.
+        elif not live and start is not None: #- frame i is not voice, and a piece is open:
+            if (i-start)>= 4: #Keep it only if it lasts 4 frames (4*10ms)
+                out.append((start,i))
+            start = None #Then no piece is open anymore
     return out
 
 
 # A noise in the workshop can pass your mask and become one more word. A piece
 # much weaker than the loudest one is not a word. How much weaker, in dB?
-SEGMENT_FLOOR_DB = None  # TODO: a number. Try 14, then look at trace.jsonl.
+SEGMENT_FLOOR_DB = 14  # TODO: a number. Try 14, then look at trace.jsonl.
 
 # To measure the noise of the room, we need enough silence: at least two of
 # the windows of `band_power`, which are 256 samples long.
-MIN_SILENCE_SAMPLES = None  # TODO: how many samples is that?
+MIN_SILENCE_SAMPLES = 512  # TODO: how many samples is that?
 
 
 def recognise(x: np.ndarray, rate: int) -> str:
@@ -270,7 +275,7 @@ def recognise(x: np.ndarray, rate: int) -> str:
     #   1. the samples from frame a to frame b of x,
     #   2. converted to sample positions with FRAME,
     #   3. squared, before np.mean takes their mean.
-    power = [np.mean(None) for a, b in pieces]
+    power = [np.mean(x[a*FRAME:b*FRAME]**2) for a, b in pieces]
     loudest = max(power)
 
     words = []
@@ -279,6 +284,8 @@ def recognise(x: np.ndarray, rate: int) -> str:
         # TODO: skip this piece (`continue`) if its power `p` is more than
         # SEGMENT_FLOOR_DB below `loudest`. In power, -14 dB is the factor
         # 10 ** (-14 / 10).
+        if p < loudest*(10**(-SEGMENT_FLOOR_DB/10)):
+            continue
 
         vector = describe(x[a * FRAME:b * FRAME], noise)
         # 4. The word whose template is the closest to `vector`. Both vectors
@@ -290,7 +297,10 @@ def recognise(x: np.ndarray, rate: int) -> str:
             for template in examples:
                 # TODO: if this template is closer than the best one so far,
                 # remember its word and its score.
-                pass
+                score = vector@template
+                if score > best_score:
+                    best_score = score
+                    best_word = word
         if best_word is not None:
             words.append(best_word)
     # " ".join(words) puts the words in one text, separated by spaces.
@@ -310,7 +320,7 @@ def similarity(a: str, b: str) -> float:
 
 
 # Below this similarity, an order is "unparsed": the robot does not guess.
-UNPARSED_BELOW = None  # TODO: a number between 0 and 1. Try 0.45.
+UNPARSED_BELOW = 0.45  # TODO: a number between 0 and 1. Try 0.45.
 
 
 def interpret(text: str) -> tuple[str, str | None, float]:
@@ -323,9 +333,12 @@ def interpret(text: str) -> tuple[str, str | None, float]:
     # return ("unparsed", None, 0.0).
     # https://docs.python.org/3/library/stdtypes.html#str.startswith
 
+    if not text.startswith(CORPUS["wake_word"]):
+        return ("unparsed", None, 0.0)    
+    
     # TODO 2. `rest` is the text after the wake word. `text[n:]` is the text
     # without its first n characters; `.strip()` removes the spaces around it.
-    rest = None
+    rest = text[len(CORPUS["wake_word"]):].strip()
 
     # TODO 3. The accepted order (in ACCEPTED) with the highest similarity to
     # `rest`, and that similarity: it is your confidence. In words: start with
@@ -333,11 +346,24 @@ def interpret(text: str) -> tuple[str, str | None, float]:
     # similarity to `rest` is higher than the confidence, it becomes the best
     # order, and its similarity the confidence.
     best, confidence = None, 0.0
+    for order in ACCEPTED:
+        simil = similarity(rest,order)
+        if simil > confidence:
+            best = order
+            confidence = simil
 
     # TODO 4. If the confidence is below UNPARSED_BELOW, return
     # ("unparsed", None, confidence).
 
+    if confidence < UNPARSED_BELOW:
+        return("unparsed", None, confidence)
+
     # TODO 5. Find the order whose "text" is `best` in CORPUS["orders"], and
     # return its "intent", its "arguments", and the confidence.
     # The engine also looks at how you treat "stop": read step 5 first.
+
+    for order in CORPUS["orders"]:
+        if order["text"] == best:
+            return (order["intent"], order.get("arguments"), confidence)
+        
     return "unparsed", None, 0.0
