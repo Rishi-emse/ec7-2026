@@ -14,9 +14,9 @@ scikit-learn
 jiwer                # word / character error rate
 
 # Session 2 (audio) — install when the session needs it
-# faster-whisper     # pre-trained ASR, runs on CPU through ctranslate2
-# piper-tts          # local speech synthesis
+faster-whisper     # pre-trained ASR, runs on CPU through ctranslate2
+piper-tts          # local speech synthesis
 
 # Sessions 3 and 4 (vision, text) — install when the session needs it
-# torch              # macOS 14 minimum on Apple Silicon
-# ultralytics        # pre-trained detection, pulls torch
+torch              # macOS 14 minimum on Apple Silicon
+ultralytics        # pre-trained detection, pulls torch
