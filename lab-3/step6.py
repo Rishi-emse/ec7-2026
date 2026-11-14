@@ -33,21 +33,21 @@ from step3 import *
 # leaves the field of view, and `unknown`.
 
 # From this distance, a stop sign makes the robot slow down.
-SLOW_FROM_M = None  # TODO: the first distance of scenario.md §4.2, in metres
+SLOW_FROM_M = 1.2  # TODO: the first distance of scenario.md §4.2, in metres
 
 # From this distance, the robot stops. At 0.3 m it must already be stopped:
 # the engine forbids a robot still moving at 0.3 m. The robot needs room to
 # brake: choose a distance between 0.3 and SLOW_FROM_M.
-STOP_FROM_M = None  # TODO: your choice. Try 0.7.
+STOP_FROM_M = 0.7  # TODO: your choice. Try 0.7.
 
 # A stop sign seen with a confidence below this value: the robot is not sure.
 # A robot that stops for nothing loses a few seconds; a robot that runs a stop
 # sign breaks the rule. So, not sure of a close stop sign: "stop".
-STOP_TRUST = None  # TODO: a number between 0 and 1. Try 0.5.
+STOP_TRUST = 0.5  # TODO: a number between 0 and 1. Try 0.5.
 
 # Any other sign seen with a confidence below this value: the robot does not
 # act on it, and says so.
-ACT_TRUST = None  # TODO: a number between 0 and 1. Try 0.4.
+ACT_TRUST = 0.4  # TODO: a number between 0 and 1. Try 0.4.
 
 
 def policy(detection: dict, state: dict) -> str:
@@ -78,6 +78,9 @@ def policy(detection: dict, state: dict) -> str:
     # TODO 1. A person in the lane (state.get("person_ahead") is True): return
     # "stop". Nothing else matters.
 
+    if (state.get("person_ahead")):
+        return "stop"
+
     # Did the robot stop in one of the last three steps? `history[-3:]` is
     # the last three elements of the list (fewer if the list is shorter).
     # any(…) is True if at least one of the values is True.
@@ -90,6 +93,16 @@ def policy(detection: dict, state: dict) -> str:
     #       confidence is below STOP_TRUST; return "slow" otherwise;
     #   - else (farther, or no distance): return "slow".
 
+    if target == "sign-stop":
+        if distance is not None and distance <= SLOW_FROM_M:
+            if distance <= STOP_FROM_M or confidence < STOP_TRUST:
+                return "stop"
+            else:
+                return "slow"
+        else:
+            return "slow"
+
+
     # The targets of the last three steps: a list comprehension, as in step 2.
     recent = [h["detection"]["target"] for h in history[-3:]]
 
@@ -100,13 +113,30 @@ def policy(detection: dict, state: dict) -> str:
     #   - otherwise, return "report": stopped in the lane with nothing said is
     #     forbidden.
 
+    if target == "unknown":
+        if "sign-stop" in recent and not stopped_here:
+            return "stop"
+        else:
+            return "report"
+
     # TODO 4. Any other sign, seen with a confidence below ACT_TRUST: return
     # "report".
+
+    if confidence < ACT_TRUST:
+        return "report"
 
     # TODO 5. The directions: "sign-left" gives "turn_left", "sign-right"
     # gives "turn_right". "sign-down" asks to go back, which the robot cannot
     # do in a lane: "stop".
 
+    if target == "sign-left":
+        return "turn_left"
+    elif target == "sign-right":
+        return "turn_right"
+    elif target == "sign-down":
+        return "stop"
+
+
     # TODO 6. Anything else ("sign-up", "sign-free"): the way is open. Replace
     # "stop" with "forward" in the line below, once the TODOs above are done.
-    return "stop"
+    return "forward"

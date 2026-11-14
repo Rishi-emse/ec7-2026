@@ -1,0 +1,13 @@
+step,target,distance_m,confidence,person_ahead,action,forbidden
+0,sign-stop,2.4,0.91,False,slow,
+1,sign-stop,1.2,0.93,False,slow,
+2,sign-stop,0.6,0.9,False,stop,
+3,sign-stop,0.3,0.88,False,stop,
+4,unknown,,0.0,False,report,
+5,unknown,,0.0,True,stop,
+6,sign-free,1.0,0.84,False,forward,
+7,sign-left,0.9,0.79,False,turn_left,
+8,unknown,,0.0,False,report,
+9,unknown,,0.0,False,report,
+10,sign-up,1.1,0.19,False,report,
+11,sign-stop,1.1,0.19,False,stop,

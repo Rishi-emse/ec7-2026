@@ -43,14 +43,14 @@ from harness import show
 
 # The focal length of the camera, in pixels. The images of data/ were rendered
 # with a known camera. data/camera.json describes it: open it in your editor.
-FOCAL_PX = None  # TODO: the value of "focal_px" in data/camera.json
+FOCAL_PX = 530  # TODO: the value of "focal_px" in data/camera.json
 
 # The real height of the marker: from the top of its top black band to the
 # bottom of its bottom black band, in metres. Slide 9 of the lecture ("Distance
 # from apparent size") needs it: d = f * H_real / h_pixels.
 # assets/geometry.json gives it in millimetres: "cylinder_ink_height_mm".
 # Open the file in your editor. You can write a division: 201.5 / 1000.
-CYLINDER_HEIGHT_M = None  # TODO: a number, in metres (not in mm)
+CYLINDER_HEIGHT_M = 201.5/1000  # TODO: a number, in metres (not in mm)
 
 
 # -----------------------------------------------------------------------------
@@ -67,12 +67,12 @@ CYLINDER_HEIGHT_M = None  # TODO: a number, in metres (not in mm)
 PATTERNS: dict[str, str | None] = {
     "sheet-1": "krk",
     "sheet-2": "kgk",
-    "sheet-3": None,
-    "sheet-4": None,
+    "sheet-3": "krgk",
+    "sheet-4": "kgrk",
     "sheet-5": "kwk",
-    "sheet-6": None,
-    "sheet-7": None,
-    "sheet-8": None,
+    "sheet-6": "kwkwk",
+    "sheet-7": "kwkwkwk",
+    "sheet-8": "kwkwkwkwk",
     "sheet-9": "k",
 }
 
@@ -84,7 +84,7 @@ PATTERNS: dict[str, str | None] = {
 
 # TODO: this function turns one pixel into one letter. Give it a name in two
 # or three words joined by "_". Rename it here, and in `detect_marker` below.
-def useful_function_1_to_rename(hsv_pixel: np.ndarray) -> str:
+def pixel_to_letter(hsv_pixel: np.ndarray) -> str:
     # The pixel is in HSV, not in RGB: hue (the colour on the colour wheel),
     # saturation (how strong the colour is), value (how bright it is). Slide 7
     # ("HSV separates hue from brightness") says why: when the light changes,
@@ -112,7 +112,7 @@ def useful_function_1_to_rename(hsv_pixel: np.ndarray) -> str:
 # TODO: this function turns a list of letters, one per row of pixels, into a
 # short word, one letter per band. Give it a name in two or three words
 # joined by "_". Rename it here, and in `detect_marker` below.
-def useful_function_2_to_rename(labels: list[str], min_run: int) -> str:
+def collapse_color_list(labels: list[str], min_run: int) -> str:
     # Example: labels = ["k", "k", "k", "r", "r", "r", "r", "k", "k", "k"],
     # min_run = 3 gives "krk".
     # A "run" is a group of the same letter, one after the other. A run
@@ -152,7 +152,7 @@ def useful_function_2_to_rename(labels: list[str], min_run: int) -> str:
 # white gap of sheet 5 is 60 % of it: about 64 px. The rectangle must be
 # taller than the gap. Closer than 1 m, the gap grows: keep that in mind in
 # step 4.
-CLOSE_HEIGHT_PX = None  # TODO: a whole number of pixels. Try 81.
+CLOSE_HEIGHT_PX = 81  # TODO: a whole number of pixels. Try 81.
 
 
 def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, float]:
@@ -172,7 +172,7 @@ def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, f
     #    cv2.COLOR_: find the right one in the documentation, and replace
     #    COLOR_None with it. Careful: our image is in RGB, not in BGR.
     #    https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html
-    hsv = cv2.cvtColor(image, cv2.COLOR_None)
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
     #    `hsv[..., 1]` is the second number of every pixel: an H x W array of
     #    saturations. The `...` means "all the rows, all the columns".
     s, v = hsv[..., 1], hsv[..., 2]
@@ -183,7 +183,7 @@ def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, f
     #    On arrays, `and` and `or` do not work: numpy uses `&` for "and", `|`
     #    for "or", on every pixel at once. Put each comparison in parentheses,
     #    as in (v < 95): `&` and `|` are computed before `<`.
-    ink = None
+    ink = (v < 95) | ((s>95) & (v>55))
 
     # 2. Morphology: close the holes, and join the top and bottom bands of
     #    sheet 5. A "closing" fills every gap smaller than the structuring
@@ -194,7 +194,7 @@ def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, f
     #    Replace None with the number of rows: the height you chose above.
     #    Three columns: we close vertically only.
     mask = cv2.morphologyEx(ink.astype(np.uint8), cv2.MORPH_CLOSE,
-                            np.ones((None, 3), np.uint8))
+                            np.ones((CLOSE_HEIGHT_PX, 3), np.uint8))
     #    Look at it: out/<image>-marker-mask.png. 1 * 255 is white.
     show("marker-mask", mask * 255)
 
@@ -219,7 +219,7 @@ def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, f
     #    width, `b[3]` the height. In words: at least 24 px tall, at least 8 px
     #    wide, and height / width between 0.9 and 2.6. Python accepts
     #    `0.9 <= a <= 2.6`. Write the condition after `if`.
-    boxes = [b for b in boxes if True]
+    boxes = [b for b in boxes if b[2] >= 8 and b[3] >= 24 and 0.9 <= (b[3] / b[2]) <= 2.6]
     if not boxes:
         return "unknown", None, None, 0.0
 
@@ -241,15 +241,20 @@ def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, f
     #    the right `axis`. axis=0 goes down the lines, axis=1 across the
     #    columns. Which one gives three numbers, H, S and V? Replace None.
     #    https://numpy.org/doc/stable/reference/generated/numpy.median.html
-    labels = [useful_function_1_to_rename(np.median(column[row], axis=None))
+    labels = [pixel_to_letter(np.median(column[row], axis=0))
               for row in range(height)]
     #    A run must last a twentieth of the height, and at least 3 rows.
-    word = useful_function_2_to_rename(labels, max(3, height // 20))
+    word = collapse_color_list(labels, max(3, height // 20))
 
     #    TODO: the sheet whose pattern is `word`. In words: start with
     #    sheet = None; for each name and pattern of PATTERNS.items(), if the
     #    pattern is equal to word, the sheet is that name.
+
     sheet = None
+    for name,pattern in PATTERNS.items():
+        if pattern == word:
+            sheet = name
+            break
     if sheet is None:
         return "unknown", None, None, 0.0
 
@@ -257,7 +262,7 @@ def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, f
     #    TODO: the distance, in metres, from the apparent height `height`, in
     #    pixels. Slide 9: d = f * H_real / h_pixels. Use FOCAL_PX and
     #    CYLINDER_HEIGHT_M.
-    distance = None
+    distance = FOCAL_PX*CYLINDER_HEIGHT_M/height
 
     #    How far the centre of the box is from the centre of the image, in
     #    pixels. image.shape is (H, W, 3): image.shape[1] is the width.
@@ -265,7 +270,7 @@ def detect_marker(image: np.ndarray) -> tuple[str, float | None, float | None, f
     #    TODO: the bearing, in degrees. In the camera, tan(angle) = offset /
     #    focal. math.atan gives the angle in radians, math.degrees turns it
     #    into degrees.
-    bearing = None
+    bearing = math.degrees(math.atan(offset/FOCAL_PX))
 
     # 7. The confidence: the fraction of ink in the box. `.mean()` of an array
     #    of True/False is the fraction of True. np.clip keeps a number between

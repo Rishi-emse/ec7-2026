@@ -32,15 +32,15 @@ import numpy as np
 
 # The signs are the model signs of the platform: a disc on a post. The diameter
 # of the disc, in metres, is in assets/geometry.json: "sign_diameter_mm".
-SIGN_DIAMETER_M = None  # TODO: a number, in metres
+SIGN_DIAMETER_M = 0.070  # TODO: a number, in metres
 
 # What your mask sees is smaller than the sign. Open assets/sign-stop.png and
 # assets/sign-up.png: the red octagon sits on a white disc, and the blue disc
 # stops before a thin white rim. assets/geometry.json gives both widths:
 # "stop_octagon_mm" and "blue_disc_mm". Each ratio is that width divided by
 # "sign_diameter_mm". Without them, every distance to a sign is too long.
-RED_OF_SHEET = None   # TODO: a number below 1. You can write 57 / 70.
-BLUE_OF_SHEET = None  # TODO: a number a little below 1
+RED_OF_SHEET = 57/70   # TODO: a number below 1. You can write 57 / 70.
+BLUE_OF_SHEET = 67.9/70  # TODO: a number a little below 1
 
 
 # -----------------------------------------------------------------------------
@@ -57,13 +57,13 @@ BLUE_OF_SHEET = None  # TODO: a number a little below 1
 # box does it fill? Then choose the two bounds of the test: both signs must
 # pass, and the crate must not. At 30 px wide, a mask is ragged: keep a
 # margin. Try 0.68 and 0.93.
-FILL_MIN = None  # TODO
-FILL_MAX = None  # TODO
+FILL_MIN = 0.72  # TODO
+FILL_MAX = 0.88  # TODO
 
 # The "circularity" of a shape is 1.0 for a disc, and lower for any other
 # shape: 0.95 for an octagon, 0.79 for a square, near 0 for a long thin shape.
 # Below this value, the region is not a sign.
-CIRCULARITY_MIN = None  # TODO: a number between 0 and 1. Try 0.72.
+CIRCULARITY_MIN = 0.80   # TODO: a number between 0 and 1. Try 0.72.
 
 
 def shape_of(contour: np.ndarray, w: int, height: int) -> tuple[float, float]:
@@ -81,7 +81,7 @@ def shape_of(contour: np.ndarray, w: int, height: int) -> tuple[float, float]:
     # has an area of pi * r ** 2 and a perimeter of 2 * pi * r: find k.
     # Write max(1.0, perimeter ** 2) instead of perimeter ** 2, to avoid a
     # division by zero. `math.pi` is pi.
-    circularity = None
+    circularity = (4.0*math.pi*area)/max(1.0, perimeter**2)
     return fill, circularity
 
 
@@ -91,7 +91,7 @@ def shape_of(contour: np.ndarray, w: int, height: int) -> tuple[float, float]:
 
 # TODO: this function is given. Read it line by line. Then give it a name, in
 # two or three words joined by "_". Rename it here, and in `detect_sign`.
-def useful_function_3_to_rename(contour: np.ndarray, mask: np.ndarray,
+def extract_arrow(contour: np.ndarray, mask: np.ndarray,
                                 x: int, y: int, w: int, height: int) -> np.ndarray:
     # An image of zeros, as large as the mask. np.zeros(shape, type).
     # https://numpy.org/doc/stable/reference/generated/numpy.zeros.html
@@ -144,7 +144,12 @@ def arrow_direction(white: np.ndarray) -> str | None:
     #   - horizontal arrow: "left" if the head is left of the middle, "right"
     #     otherwise.
     # The form `a if condition else b`, above, writes each case in one line.
-    return None
+    res = None
+    if vertical:
+        res = "up" if head.mean() < middle else "down"
+    else:
+        res = "left" if head.mean() < middle else "right"
+    return res
 
 
 # -----------------------------------------------------------------------------
@@ -157,7 +162,7 @@ def detect_free(hsv: np.ndarray, image: np.ndarray) -> tuple[str, float | None, 
     # TODO: `pale` is True where the pixel is white: little colour (s below
     # 70) and bright (v above 170). Write it as in step 2, with `&`, then
     # turn it into 0/1 with .astype(np.uint8).
-    pale = None
+    pale = ((s < 70) &(v > 170)).astype(np.uint8)
     pale = cv2.morphologyEx(pale, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
     contours, _ = cv2.findContours(pale, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     # The three largest regions, largest first. sorted(list, key=f,
@@ -174,6 +179,8 @@ def detect_free(hsv: np.ndarray, image: np.ndarray) -> tuple[str, float | None, 
         # TODO: skip this region (`continue`) unless the dark part is between
         # 5 % and 32 % of the box: a bar, and nothing else. `dark.mean()` is
         # that fraction.
+        if not(0.05<= dark.mean() <= 0.32):
+            continue
 
         # The bar goes across, at an angle: its pixels are spread from left
         # to right. np.nonzero gives the rows and the columns of the True
@@ -185,9 +192,10 @@ def detect_free(hsv: np.ndarray, image: np.ndarray) -> tuple[str, float | None, 
             continue
         # TODO: the distance, as in step 2. The white disc is the whole sign:
         # use SIGN_DIAMETER_M, with no ratio.
-        distance = None
+        distance = FOCAL_PX * SIGN_DIAMETER_M / height
         # TODO: the bearing: the same two lines as in step 2.
-        bearing = None
+        offset = x+w/2 - image.shape[1]/2
+        bearing = math.degrees(math.atan(offset/FOCAL_PX))
         return "sign-free", distance, bearing, 0.58
     return "unknown", None, None, 0.0
 
@@ -202,7 +210,7 @@ def detect_sign(image: np.ndarray) -> tuple[str, float | None, float | None, flo
     # "unknown". A marker is "unknown" here: it is not a sign.
 
     # 1. TODO: the image in HSV: the same line as in step 2.
-    hsv = None
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
     h, s, v = hsv[..., 0], hsv[..., 1], hsv[..., 2]
 
     # 2. Two colour masks. Red: hue near 0 or near 180, strong, not too dark.
@@ -211,7 +219,7 @@ def detect_sign(image: np.ndarray) -> tuple[str, float | None, float | None, flo
     #    OpenCV. In words: hue above 95 and below 130, s above 100, v above
     #    40. On an array, `95 < h < 130` does not work: write two comparisons
     #    joined by `&`.
-    blue = None
+    blue = (h > 95) & (h < 130) & (s > 100) & (v > 40)
 
     # 3. Each mask in turn. The loop gives `name` and `mask` at each turn:
     #    first ("red", red), then ("blue", blue).
@@ -233,20 +241,23 @@ def detect_sign(image: np.ndarray) -> tuple[str, float | None, float | None, flo
             # TODO: the shape test. Skip this region (`continue`) if `fill` is
             # not between FILL_MIN and FILL_MAX, or if `circularity` is below
             # CIRCULARITY_MIN.
+            if not(FILL_MIN <= fill <= FILL_MAX) or circularity < CIRCULARITY_MIN:
+                continue
 
             # 4. Distance and bearing. The size the mask sees: the diameter
             #    of the sign times the ratio of its colour.
             seen = SIGN_DIAMETER_M * (RED_OF_SHEET if name == "red" else BLUE_OF_SHEET)
             # TODO: the distance, as in step 2, with `seen` as the real size.
-            distance = None
+            distance = FOCAL_PX*seen/height
             # TODO: the bearing: the same two lines as in step 2.
-            bearing = None
+            offset = x+w/2 - image.shape[1]/2
+            bearing = math.degrees(math.atan(offset/FOCAL_PX))
 
             # 5. The name. A red octagon is a stop sign.
             if name == "red":
                 return "sign-stop", distance, bearing, float(np.clip(circularity, 0, 1))
             # A blue disc: the arrow in it gives the name.
-            arrow = arrow_direction(useful_function_3_to_rename(contour, mask, x, y, w, height))
+            arrow = arrow_direction(extract_arrow(contour, mask, x, y, w, height))
             if arrow is None:
                 continue
             return f"sign-{arrow}", distance, bearing, 0.70

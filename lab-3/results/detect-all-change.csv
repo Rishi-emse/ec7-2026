@@ -1,0 +1,11 @@
+condition,detector,n_present,accuracy,family_accuracy,distance_mae_m,bearing_mae_deg,n_other,false_positive_rate,fp_per_minute,latency_ms_median,latency_ms_p90
+even,marker,34,0.971,,0.037,0.06,16,0.0,0.0,2.78,4.52
+even,sign,16,0.5,0.688,0.038,0.07,34,0.206,123.5,3.27,4.58
+low-sun,marker,28,0.893,,0.021,0.13,22,0.0,0.0,1.66,2.38
+low-sun,sign,22,0.636,0.636,0.058,0.03,28,0.429,257.1,2.34,3.01
+shadow,marker,37,0.811,,0.016,0.15,13,0.154,92.3,1.79,2.34
+shadow,sign,13,0.615,0.846,0.035,0.04,37,0.108,64.9,1.94,2.53
+mixed,marker,33,0.848,,0.013,0.18,17,0.0,0.0,1.66,2.37
+mixed,sign,17,0.529,0.529,0.054,0.24,33,0.03,18.2,1.93,2.36
+absent,marker,0,,,,,50,0.08,48.0,1.48,2.2
+absent,sign,0,,,,,50,0.08,48.0,1.88,2.37

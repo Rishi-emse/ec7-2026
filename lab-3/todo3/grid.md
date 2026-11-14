@@ -11,13 +11,13 @@
 
 | Criterion | Score | One sentence, with a number or a fact | Where it comes from |
 |---|---|---|---|
-| Latency | ___ | ___ | `latency_ms_median` in `results/detect-all.csv` |
-| Total cost | ___ | ___ | what it needs: a CPU, no GPU, no training data |
-| Energy | ___ | ___ | same as cost: what runs on the robot |
-| Processing mode | ___ | ___ | one image at a time, or several? |
-| Deployment and sovereignty | ___ | ___ | does it need a network or a service? |
-| Robustness | ___ | ___ | `accuracy` per condition: `even` against `shadow` and `mixed` |
-| Explainability | ___ | ___ | the images in `out/`: can you say why it failed? |
-| Confidentiality | ___ | ___ | the camera films the lane, and people walk in it |
-| Maintainability | ___ | ___ | steps 4 and 5: how hard was one change? |
-| Human control | ___ | ___ | step 6: what the robot does when it is not sure |
+| Latency | +3 | median latency between 1.91 and 4.46ms which allows for real time decision making | `latency_ms_median` in `results/detect-all.csv` |
+| Total cost | +3 | this is the cheapest possible way to process images | what it needs: a CPU, no GPU, no training data |
+| Energy | +2 | low cpu loads but processing onboard of robot which can drain extra battery | same as cost: what runs on the robot |
+| Processing mode | +2 | processes one image at a time, it allows it to keep up with the video stream  | one image at a time, or several? |
+| Deployment and sovereignty | +3 | runs locally on the robot independently of network or external services | does it need a network or a service? |
+| Robustness | -2 | even marker accuracy is great at 0.971 and shadow marker accuracy at 0.811 and mixed marker at 0.848 but sign accuracy is way off with 0 for mixed and only 0.5 for even | `accuracy` per condition: `even` against `shadow` and `mixed` |
+| Explainability | +3 | with the mask it's possible to see exactly what was seen by the algorithm and see why it failed | the images in `out/`: can you say why it failed? |
+| Confidentiality | +2 | People can be filmed but data doesn't leave the robot | the camera films the lane, and people walk in it |
+| Maintainability | +1 | changes are really easy to make but requires to have read the codebase and not forgotten what was in it, sometimes changes are made through constants, sometimes inside function declarations | steps 4 and 5: how hard was one change? |
+| Human control | +3 | The robot either reports or stops when unsure which is the least risky thing to do in our scenario | step 6: what the robot does when it is not sure |

@@ -1,0 +1,9 @@
+condition,detector,truth,answer,count
+even,sign,sheet-1,sign-stop,4
+even,sign,sign-left,unknown,3
+even,sign,sheet-5,sign-free,2
+even,sign,sign-up,sign-right,2
+even,sign,sheet-6,sign-free,1
+even,sign,sign-down,unknown,1
+even,sign,sign-up,sign-left,1
+even,marker,sheet-8,sheet-6,1
