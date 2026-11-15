@@ -1,0 +1,41 @@
+id,family,text,state,intent,arguments,outcome
+a01,out_of_scope,robot 3 open the door,idle,,,not_understood
+a02,out_of_scope,"robot 3, order me a coffee",idle,,,not_understood
+a03,out_of_scope,robot 3 what is the weather,idle,,,not_understood
+a04,out_of_scope,robot 3 sing a song,moving,,,not_understood
+a05,out_of_scope,robot 3 charge yourself,idle,,,not_understood
+a06,out_of_scope,"robot 3, call fabien",idle,,,not_understood
+a07,out_of_scope,robot 3 delete the log,idle,,,not_understood
+a08,out_of_scope,robot 3 go to the roof,idle,,,not_understood
+a09,ambiguous,robot 3 carry the pallet,idle,carry,,not_understood
+a10,ambiguous,robot 3 turn,moving,,,not_understood
+a11,ambiguous,"robot 3, move it",idle,,,not_understood
+a12,ambiguous,robot 3 make one,idle,make,,not_understood
+a13,ambiguous,robot 3 carry that,idle,carry,,not_understood
+a14,ambiguous,robot 3 go there,idle,,,not_understood
+a15,ambiguous,robot 3 take the crate,idle,carry,,not_understood
+a16,ambiguous,"robot 3, the other one",idle,,,not_understood
+a17,other_robot,robot 5 forward,idle,not_for_me,,ignored
+a18,other_robot,robot 1 stop,moving,not_for_me,,ignored
+a19,other_robot,"robot 2, carry blue pallet",idle,not_for_me,,ignored
+a20,other_robot,robot 4 make green crate,idle,not_for_me,,ignored
+a21,other_robot,"robot 1, why?",busy2,not_for_me,,ignored
+a22,other_robot,robot 5 turn left,moving,not_for_me,,ignored
+a23,other_robot,"robot 2, conveyor 2 is out of service",idle,not_for_me,,ignored
+a24,other_robot,robot 7 forward,person,not_for_me,,ignored
+a25,world_decides,robot 3 make green crate,busy2,make,green crate,not_possible
+a26,world_decides,robot 3 forward,person,forward,,not_permitted
+a27,world_decides,robot 3 make green crate,down2,make,green crate,not_possible
+a28,world_decides,robot 3 carry blue pallet,carrying,carry,blue pallet,not_possible
+a29,world_decides,robot 3 turn right,person,turn_right,,not_permitted
+a30,world_decides,"robot 3, carry the grey box",person,carry,grey box,not_permitted
+a31,world_decides,robot 3 make blue pallet,busy2,make,blue pallet,act
+a32,world_decides,robot 3 forward,person,forward,,not_permitted
+a33,half_wake,rob 3 forward,idle,,,not_understood
+a34,half_wake,robot forward,moving,,,not_understood
+a35,half_wake,three stop,moving,,,not_understood
+a36,half_wake,"...bot 3, carry blue pallet",idle,,,not_understood
+a37,half_wake,robot 3,idle,,,not_understood
+a38,half_wake,forward,person,,,not_understood
+a39,half_wake,robo 3 make green crate,idle,,,not_understood
+a40,half_wake,r bot 3 stop,moving,,,not_understood

@@ -1,0 +1,3 @@
+id,family,text,state,intent,reason,sentence,same_in_two_states
+v05,valid,robot 3 forward,person,forward,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+v06,valid,robot 3 move forward,person,forward,not_permitted,"someone is 1.1 m ahead, I am not moving",False

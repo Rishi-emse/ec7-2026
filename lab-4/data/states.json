@@ -1,0 +1,14 @@
+{
+  "idle":     {"moving": false, "person_ahead": false, "person_distance_m": null,
+               "carrying": null, "conveyors": {"1": "free", "2": "free", "3": "free", "4": "free"}},
+  "moving":   {"moving": true,  "person_ahead": false, "person_distance_m": null,
+               "carrying": null, "conveyors": {"1": "free", "2": "free", "3": "free", "4": "free"}},
+  "person":   {"moving": true,  "person_ahead": true,  "person_distance_m": 1.1,
+               "carrying": null, "conveyors": {"1": "free", "2": "free", "3": "free", "4": "free"}},
+  "busy2":    {"moving": false, "person_ahead": false, "person_distance_m": null,
+               "carrying": null, "conveyors": {"1": "free", "2": "busy with robot 1, 40 s", "3": "free", "4": "free"}},
+  "down2":    {"moving": false, "person_ahead": false, "person_distance_m": null,
+               "carrying": null, "conveyors": {"1": "free", "2": "out of service", "3": "free", "4": "free"}},
+  "carrying": {"moving": true,  "person_ahead": false, "person_distance_m": null,
+               "carrying": "blue pallet", "conveyors": {"1": "free", "2": "free", "3": "free", "4": "free"}}
+}

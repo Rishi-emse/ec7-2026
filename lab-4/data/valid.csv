@@ -1,0 +1,41 @@
+id,text,state,intent,arguments,outcome
+v01,robot 3 forward,idle,forward,,act
+v02,"robot 3, go forward",idle,forward,,act
+v03,robot 3 move forward,moving,forward,,act
+v04,"robot 3, forward please",idle,forward,,act
+v05,robot 3 forward,person,forward,,not_permitted
+v06,robot 3 move forward,person,forward,,not_permitted
+v07,robot 3 stop,moving,stop,,act
+v08,"robot 3, stop",idle,stop,,act
+v09,robot 3 stop now,person,stop,,act
+v10,robot 3 stop moving,carrying,stop,,act
+v11,robot 3 turn left,idle,turn_left,,act
+v12,robot 3 left,moving,turn_left,,act
+v13,"robot 3, turn right",idle,turn_right,,act
+v14,robot 3 right,moving,turn_right,,act
+v15,robot 3 turn left,person,turn_left,,not_permitted
+v16,robot 3 carry blue pallet,idle,carry,blue pallet,act
+v17,"robot 3, carry the blue pallet",idle,carry,blue pallet,act
+v18,robot 3 carry red pallet,moving,carry,red pallet,act
+v19,robot 3 carry a grey box,idle,carry,grey box,act
+v20,robot 3 carry green crate,carrying,carry,green crate,not_possible
+v21,robot 3 carry blue pallet,person,carry,blue pallet,not_permitted
+v22,robot 3 make green crate,idle,make,green crate,act
+v23,"robot 3, make the green crate",idle,make,green crate,act
+v24,robot 3 make a blue pallet,idle,make,blue pallet,act
+v25,robot 3 make green crate,busy2,make,green crate,not_possible
+v26,robot 3 make green crate,down2,make,green crate,not_possible
+v27,robot 3 make red pallet,busy2,make,red pallet,act
+v28,robot 3 make grey box,down2,make,grey box,act
+v29,"robot 3, conveyor 2 is out of service",idle,assert_conveyor,2 out of service,noted
+v30,robot 3 conveyor 2 is busy,idle,assert_conveyor,2 busy,noted
+v31,"robot 3, conveyor 4 is out of service",moving,assert_conveyor,4 out of service,noted
+v32,robot 3 conveyor 1 is free,down2,assert_conveyor,1 free,noted
+v33,"robot 3, why?",busy2,why,,explain
+v34,robot 3 why,person,why,,explain
+v35,"robot 3, why not?",down2,why,,explain
+v36,robot 3 stop,busy2,stop,,act
+v37,robot 3 keep going forward,carrying,forward,,act
+v38,robot 3 turn to the left,carrying,turn_left,,act
+v39,robot 3 carry green crate,busy2,carry,green crate,act
+v40,robot 3 make green crate,carrying,make,green crate,act

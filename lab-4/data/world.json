@@ -1,0 +1,6 @@
+{
+  "wake_word": "robot 3",
+  "products": ["blue pallet", "red pallet", "green crate", "grey box"],
+  "product_conveyor": {"blue pallet": "1", "green crate": "2", "red pallet": "3", "grey box": "4"},
+  "note": "Which conveyor a product needs is the world's business, not the grammar's. `make` needs its conveyor free; `carry` needs the robot's hands empty."
+}

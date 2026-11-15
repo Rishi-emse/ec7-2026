@@ -1,0 +1,47 @@
+id,family,text,state,intent,reason,sentence,same_in_two_states
+v05,valid,robot 3 forward,person,forward,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+v06,valid,robot 3 move forward,person,forward,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+v15,valid,robot 3 turn left,person,turn_left,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+v20,valid,robot 3 carry green crate,carrying,carry,not_possible,my hands hold the blue pallet already,False
+v21,valid,robot 3 carry blue pallet,person,carry,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+v25,valid,robot 3 make green crate,busy2,make,not_possible,"conveyor 2 is busy with robot 1, 40 s",False
+v26,valid,robot 3 make green crate,down2,make,not_possible,conveyor 2 is out of service,False
+a01,out_of_scope,robot 3 open the door,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a02,out_of_scope,"robot 3, order me a coffee",idle,unparsed,not_understood,"I did not catch that, say it again",False
+a03,out_of_scope,robot 3 what is the weather,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a04,out_of_scope,robot 3 sing a song,moving,unparsed,not_understood,"I did not catch that, say it again",False
+a05,out_of_scope,robot 3 charge yourself,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a06,out_of_scope,"robot 3, call fabien",idle,unparsed,not_understood,"I did not catch that, say it again",False
+a07,out_of_scope,robot 3 delete the log,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a08,out_of_scope,robot 3 go to the roof,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a09,ambiguous,robot 3 carry the pallet,idle,carry,not_understood,carry what? say a product I know,False
+a10,ambiguous,robot 3 turn,moving,unparsed,not_understood,"I did not catch that, say it again",False
+a11,ambiguous,"robot 3, move it",idle,unparsed,not_understood,"I did not catch that, say it again",False
+a12,ambiguous,robot 3 make one,idle,make,not_understood,make what? say a product I know,False
+a13,ambiguous,robot 3 carry that,idle,carry,not_understood,carry what? say a product I know,False
+a14,ambiguous,robot 3 go there,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a15,ambiguous,robot 3 take the crate,idle,carry,not_understood,carry what? say a product I know,False
+a16,ambiguous,"robot 3, the other one",idle,unparsed,not_understood,"I did not catch that, say it again",False
+a17,other_robot,robot 5 forward,idle,not_for_me,not_for_me,"that was for robot 5, not me",False
+a18,other_robot,robot 1 stop,moving,not_for_me,not_for_me,"that was for robot 1, not me",False
+a19,other_robot,"robot 2, carry blue pallet",idle,not_for_me,not_for_me,"that was for robot 2, not me",False
+a20,other_robot,robot 4 make green crate,idle,not_for_me,not_for_me,"that was for robot 4, not me",False
+a21,other_robot,"robot 1, why?",busy2,not_for_me,not_for_me,"that was for robot 1, not me",False
+a22,other_robot,robot 5 turn left,moving,not_for_me,not_for_me,"that was for robot 5, not me",False
+a23,other_robot,"robot 2, conveyor 2 is out of service",idle,not_for_me,not_for_me,"that was for robot 2, not me",False
+a24,other_robot,robot 7 forward,person,not_for_me,not_for_me,"that was for robot 7, not me",False
+a25,world_decides,robot 3 make green crate,busy2,make,not_possible,"conveyor 2 is busy with robot 1, 40 s",False
+a26,world_decides,robot 3 forward,person,forward,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+a27,world_decides,robot 3 make green crate,down2,make,not_possible,conveyor 2 is out of service,False
+a28,world_decides,robot 3 carry blue pallet,carrying,carry,not_possible,my hands hold the blue pallet already,False
+a29,world_decides,robot 3 turn right,person,turn_right,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+a30,world_decides,"robot 3, carry the grey box",person,carry,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+a32,world_decides,robot 3 forward,person,forward,not_permitted,"someone is 1.1 m ahead, I am not moving",False
+a33,half_wake,rob 3 forward,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a34,half_wake,robot forward,moving,unparsed,not_understood,"I did not catch that, say it again",False
+a35,half_wake,three stop,moving,unparsed,not_understood,"I did not catch that, say it again",False
+a36,half_wake,"...bot 3, carry blue pallet",idle,unparsed,not_understood,"I did not catch that, say it again",False
+a37,half_wake,robot 3,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a38,half_wake,forward,person,unparsed,not_understood,"I did not catch that, say it again",False
+a39,half_wake,robo 3 make green crate,idle,unparsed,not_understood,"I did not catch that, say it again",False
+a40,half_wake,r bot 3 stop,moving,unparsed,not_understood,"I did not catch that, say it again",False

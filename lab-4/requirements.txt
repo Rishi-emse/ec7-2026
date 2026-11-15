@@ -1,0 +1,7 @@
+# Lab 4 — text. What this lab adds to the course environment of assignment 1:
+# nothing. The grammar of step 2 runs on the Python standard library alone.
+# See decisions/2026-09-20_un-venv-de-cours.md.
+#
+# Only for "If you are ahead" in assignment 4, the nearest intent by sentence
+# embeddings (it pulls torch: say in your report what it cost):
+# sentence-transformers
